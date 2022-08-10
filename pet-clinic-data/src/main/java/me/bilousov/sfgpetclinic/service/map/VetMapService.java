@@ -2,10 +2,11 @@ package me.bilousov.sfgpetclinic.service.map;
 
 import me.bilousov.sfgpetclinic.model.Vet;
 import me.bilousov.sfgpetclinic.service.CrudService;
+import me.bilousov.sfgpetclinic.service.VetService;
 
 import java.util.Set;
 
-public class VetMapService extends AbstractMapService<Vet, Long> implements CrudService<Vet, Long> {
+public class VetMapService extends AbstractMapService<Vet, Long> implements VetService {
     @Override
     public Set<Vet> findAll() {
         return super.findAll();

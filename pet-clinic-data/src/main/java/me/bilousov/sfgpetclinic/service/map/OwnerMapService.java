@@ -1,13 +1,24 @@
 package me.bilousov.sfgpetclinic.service.map;
 
 import me.bilousov.sfgpetclinic.model.Owner;
+import me.bilousov.sfgpetclinic.model.Pet;
 import me.bilousov.sfgpetclinic.service.OwnerService;
+import me.bilousov.sfgpetclinic.service.PetService;
+import me.bilousov.sfgpetclinic.service.PetTypeService;
 import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
 @Service
 public class OwnerMapService extends AbstractMapService<Owner, Long> implements OwnerService {
+
+    private final PetTypeService petTypeService;
+    private final PetService petService;
+
+    public OwnerMapService(PetTypeService petTypeService, PetService petService) {
+        this.petTypeService = petTypeService;
+        this.petService = petService;
+    }
 
     @Override
     public Set<Owner> findAll() {
@@ -26,7 +37,29 @@ public class OwnerMapService extends AbstractMapService<Owner, Long> implements 
 
     @Override
     public Owner save(Owner object) {
-        return super.save(object);
+
+        if(object != null){
+            if(object.getPets() != null){
+                object.getPets().forEach(pet -> {
+                    if(pet.getPetType() != null){
+                        if(pet.getPetType().getId() == null){
+                            pet.setPetType(petTypeService.save(pet.getPetType()));
+                        }
+                    } else {
+                        throw new RuntimeException("Pet type is required!");
+                    }
+
+                    if(pet.getId() == null){
+                        Pet savedPet = petService.save(pet);
+                        pet.setId(savedPet.getId());
+                    }
+                });
+            }
+
+            return super.save(object);
+        }
+
+        return null;
     }
 
     @Override
